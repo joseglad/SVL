@@ -1,21 +1,34 @@
 #demo
 
 #fonctionnalite pour Caisse
-#- visualiser le solde de la carte
-# -visualiser le nombre de tickets restau
-# -visualiser la valeur d'un ticket
-# -payer un repas sans ticket
-# -payer un repas avec un ticket
+# - visualiser le solde de la carte
+# - visualiser le nombre de tickets restau
+# - visualiser la valeur d'un ticket
+# - payer un repas sans ticket
+# - payer un repas avec un ticket
 
-#- visualiser le solde de la carte
-#-- cas nominal : solde caisse = solde carte  => test ok
-#-- pas de carte insérée : erreur => test ok
+
+# - visualiser le solde de la carte
+# -- cas nominal : solde caisse = solde carte  => test ok
+# -- pas de carte insérée : erreur => test ok
+
+# - visualiser le nombre de tickets restau
+# -- cas nominal : retourne nb ticket
+
+# - visualiser la valeur d'un ticket
+# -- cas nominal : retourne valeur ticket
 
 # - payer un repas sans ticket
+# -- cas nominal : la carte est débitée => ok
+# -- pas assez d'argent sur la carte : erreur => ok
+# -- pas de carte insérée : erreur => ok
+# -- prix repas : erreur (prix du repas doit être strictement positif) => ok
+
+# - payer un repas avec un ticket
 # -- cas nominal : la carte est débitée
 # -- pas assez d'argent sur la carte : erreur
 # -- pas de carte insérée : erreur
-# -- erreur prix repas
+# -- prix repas : erreur (prix du repas doit être strictement positif)
 
 class Caisse:
 	"""
@@ -43,6 +56,13 @@ class Caisse:
 		return self.carte.solde()
 
 	def payer_repas_sans_ticket(self, montant):
+		if montant <= 0:
+			raise PrixRepasError()
+		if self.carte == None:
+			raise CarteManquanteError()
+		self.carte.debiter(montant)
+
+	def payer_repas_avec_ticket(self, montant):
 		self.carte.debiter(montant)
 		
 		
@@ -62,3 +82,8 @@ class CarteManquanteError(Exception):
 
 class SoldeInsuffisantError(Exception):
 	pass
+
+class PrixRepasError(Exception):
+	pass
+
+

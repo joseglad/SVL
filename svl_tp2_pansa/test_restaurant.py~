@@ -6,7 +6,9 @@ import unittest
 from mockito import *
 from restaurant import *
 
+#- visualiser le solde de la carte
 class TestCaisse(unittest.TestCase):
+	#-- cas nominal : solde caisse = solde carte  => test ok
 	def test_le_solde_caisse_est_celui_de_la_carte(self):
 		caisse = Caisse()
 		LE_SOLDE = 10
@@ -21,13 +23,15 @@ class TestCaisse(unittest.TestCase):
 
 		caisse.inserer_carte(carte)
 		self.assertEqual(caisse.solde(), LE_SOLDE)
-
+	
+	#-- pas de carte insérée : erreur => test ok
 	def test_sans_carte_la_visualisation_echoue(self):
 		caisse = Caisse()
 		self.assertRaises(CarteManquanteError, caisse.solde)
 
-
+# - payer un repas sans ticket
 class TestPayerUnRepasSansTicket(unittest.TestCase):
+	# -- cas nominal : la carte est débitée => ok
 	def test_sans_ticket_la_carte_est_debitee(self):
 		caisse = Caisse()
 		carte = mock()
@@ -40,19 +44,42 @@ class TestPayerUnRepasSansTicket(unittest.TestCase):
 		#verify vérifie que l'appel a debiter a été fait
 		verify(carte).debiter(REPAS)
 
+	# -- pas assez d'argent sur la carte : erreur => ok
 	def test_sans_ticket_pas_suffisamment_d_argent_le_paiement_echoue(self):
 		caisse = Caisse()
 		carte = mock()
 		caisse.inserer_carte(carte)
 		
 		REPAS = 7.0
-		when(carte).debiter(REPAS).thenRaise(SoldeInsuffisantError(), caisse.payer_repas_sans_ticket, REPAS)
+		#On veut une error donc on dit a carte.debiter de déclencher lorsqu'on l'appelle
+		when(carte).debiter(REPAS).thenRaise(SoldeInsuffisantError(), 				caisse.payer_repas_sans_ticket, REPAS)
 		self.assertRaises(SoldeInsuffisantError, caisse.payer_repas_sans_ticket, REPAS)
 	
-	def test_sans_carte_la_visualisation_echoue(self):
+	# -- pas de carte insérée : erreur => ok
+	def test_sans_ticket_sans_carte_la_visualisation_echoue(self):
+		#On n'a pas inséré de carte => erreur
 		caisse = Caisse()
-		self.assertRaises(CarteManquanteError, caisse.solde)
+		REPAS = 7.0
+		self.assertRaises(CarteManquanteError, caisse.payer_repas_sans_ticket, REPAS)
 
+	# -- prix repas : erreur (prix du repas doit être strictement positif) => ok
+	def test_sans_ticket_erreur_prix_repas(self):
+		caisse = Caisse()
+		carte = mock()
+		caisse.inserer_carte(carte)
+		REPAS = -10.0
+		self.assertRaises(PrixRepasError, caisse.payer_repas_sans_ticket, REPAS)
+
+# - payer un repas avec un ticket
+class TestPayerUnRepasAvecTicket(unittest.TestCase):
+	# -- cas nominal : la carte est débitée 
+	def test_avec_ticket_la_carte_est_debitee(self):
+		caisse = Caisse()
+		carte = mock()
+		caisse.inserer_carte(carte)
+		REPAS = 7.0
+		caisse.payer_repas_avec_ticket(REPAS)
+		verify(carte).debiter
 
 class MockCarte():
 	"""
