@@ -13,10 +13,13 @@
 # -- pas de carte insérée : erreur => test ok
 
 # - visualiser le nombre de tickets restau
-# -- cas nominal : retourne nb ticket
+# -- cas nominal : retourne nb ticket => ok
+# -- pas de carte insérée : erreur
 
 # - visualiser la valeur d'un ticket
 # -- cas nominal : retourne valeur ticket
+# -- pas de carte insérée : erreur
+# -- pas de ticket : erreur
 
 # - payer un repas sans ticket
 # -- cas nominal : la carte est débitée => ok
@@ -64,6 +67,12 @@ class Caisse:
 
 	def payer_repas_avec_ticket(self, montant):
 		self.carte.debiter(montant)
+
+	def avoir_nombre_tickets(self):
+		return self.carte.avoir_nombre_tickets()
+
+	def avoir_valeur_ticket(self):
+		return self.carte.avoir_valeur_ticket()
 		
 		
 class Carte:

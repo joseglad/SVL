@@ -29,6 +29,29 @@ class TestCaisse(unittest.TestCase):
 		caisse = Caisse()
 		self.assertRaises(CarteManquanteError, caisse.solde)
 
+# - visualiser le nombre de tickets restau
+class TestNombreTicketsRestaurant(unittest.TestCase):
+	# -- cas nominal : retourne nb ticket => ok
+	def test_nombre_ticket_restaurant(self):
+		caisse = Caisse()
+		carte = mock()
+		caisse.inserer_carte(carte)
+		TICKET = 5
+		when(carte).avoir_nombre_tickets().thenReturn(TICKET)
+		self.assertEqual(caisse.avoir_nombre_tickets(), TICKET)
+
+# - visualiser la valeur d'un ticket
+class TestValeurTicket(unittest.TestCase):
+	# -- cas nominal : retourne valeur ticket
+	def test_valeur_ticket(self):
+		caisse = Caisse()
+		carte = mock()
+		caisse.inserer_carte(carte)
+		TICKET = 5
+		VALEUR = 7.0
+		when(carte).avoir_valeur_ticket().thenReturn(VALEUR)
+		self.assertEqual(caisse.avoir_valeur_ticket(), VALEUR)
+
 # - payer un repas sans ticket
 class TestPayerUnRepasSansTicket(unittest.TestCase):
 	# -- cas nominal : la carte est débitée => ok
